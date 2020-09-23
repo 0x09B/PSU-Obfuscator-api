@@ -10,19 +10,18 @@ import asyncio
 import threading
 import os
 #<--------------Imports End-------------->
-
-#<--------------Prefix Start-------------->
-async def get_pre(bot, message):
-	with open("config.json") as f:
-		pprefix = json.load(f)
-		prefix = pprefix["prefix"]
-	return prefix
-#<--------------Prefix Stop-------------->
-bot = commands.Bot(command_prefix=get_pre, self_bot=True)
-bot.remove_command('help')
 bot_config = json.loads(open("config.json", "r").read())
 psubotid = bot_config["psu-bot-id"]
 psubotserver = bot_config["psu-bot-server"]
+prefix = bot_config["prefix"]
+
+bot = commands.Bot(command_prefix=prefix, self_bot=True)
+bot.remove_command('help')
+
+
+@bot.event
+async def on_ready():
+	print("Bot is ready!")
 
 
 
@@ -71,15 +70,4 @@ async def ob(ctx,*args):
 
 
 
-def start():
-	try:
-		os.system("title Connecting to discord server")
-		print("\n>> Connecting to discord servers...")
-
-		with open("config.json") as f:
-			token = json.load(f)
-			bot.run(token["token"], bot=False)
-	except Exception as e:
-		print(f"\n>> Something went wrong, please check the error!\n>> Error: {e}")
-		input()
-threading.Thread(target=start, args=()).start()
+bot.run(bot_config["token"], bot=False)
